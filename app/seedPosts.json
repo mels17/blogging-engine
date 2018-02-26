@@ -1,0 +1,24 @@
+{
+	"posts": [{
+		"title": "Orientation",
+		"body": [ "This story does not start from the first day at MYOB office, but the day before. ",
+			"I was so excited for this job as this is also my first one. That night I couldn’t even sleep,",
+			" all I could think was how this new phase of my life would be. I had a vague memory of the time",
+			" we were supposed to report at the office (I tried finding the email, but it mysteriously disappeared",
+			" from my mailbox). Assuming reporting time is 9:00am, I left from my home at 8 and reached MYOB 20 mins later.",
+			" Little did I know my mind was playing tricks on me (again!, this was not the first time). The reporting",
+			" time was 9:30. Typical me."],
+		"slug": "postone"
+	}, {
+		"title": "Before MYOB",
+		"body": [ "I’m originally from India but was born and brought-up in Oman. I moved to Australia for my higher",
+		" studies. I graduated from Queensland University of Technology(QUT) with a Bachelors in Computer Engineering.",
+		" During this time, I was exposed to different programming languages like Java, C, C#, C++, Python and MATLAB ",
+		"and among them I enjoyed programming in Java and Python the most. My final year uni project was with the", 
+		"Human-Computer Interaction department. The project involved creating an interface to make it easier for people", 
+		"to learn bird songs and explore nature. Through this project, I got a hands-on approach to software design and",
+		" development. I did some tutoring in-between to enhance my knowledge."],
+		"slug": "posttwo"
+	}
+]
+}

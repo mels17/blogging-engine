@@ -22,18 +22,43 @@ var port = process.env.PORT || 8080;
 // get an instance of the express router
 var router = express.Router( );
 
-// test route to make sure everything is working( accessed at GET http://localhost:8080/api)
-router.get( '/', function( req, res ) {
-	res.json( { message: 'Welcome to the Blogging Engine' } );
-})
+var file = require( "./seedPosts.json" );
+
+
+var url = "http://localhost:8080/posts/"
+var listOfPosts = [];
+var partial_url = [];
+for ( var i = 0; i <= Object.keys( file ).length; i++ ) {
+	listOfPosts[ i ] = url + (file.posts[ i ]).slug;
+	partial_url[ i ] = '/posts/' + (file.posts[ i ]).slug;
+}
+
+app.use( function ( req, res, next ) {
+	var index = partial_url.indexOf( req.url );
+	if ( index != -1 ) {
+		res.status( 200 );
+		res.contentType( 'application/json' ).json( file.posts[ index ] );
+	} else if ( req.url == '/posts' ) {
+		res.status( 200 );
+		res.contentType('application/json').json( listOfPosts );
+	} else {
+		  res.status( 404 );
+
+		  // respond with json
+		  if ( req.accepts( 'json' ) ) {
+		    res.send({ error: 'Not found' });
+		    return;
+		  }		
+	}
+});
 
 
 // ROUTE REGISTRATION ----------------------------------------------------------------------
 // all of our routes will be prefixed with /api
-app.use( '/api', router );
+app.use( '/posts', router );
 
 // START THE SERVER
 // =========================================================================================
 app.listen( port );
-console.log( "Server running" );
+console.log( "Server running ..." );
 console.log( "Port number:" + port );
