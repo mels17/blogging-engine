@@ -1,7 +1,7 @@
 {
 	"posts": [{
 		"title": "Orientation",
-		"body": [ "This story does not start from the first day at MYOB office, but the day before. ",
+		"blogTxt": [ "This story does not start from the first day at MYOB office, but the day before. ",
 			"I was so excited for this job as this is also my first one. That night I couldn’t even sleep,",
 			" all I could think was how this new phase of my life would be. I had a vague memory of the time",
 			" we were supposed to report at the office (I tried finding the email, but it mysteriously disappeared",
@@ -11,7 +11,7 @@
 		"slug": "postone"
 	}, {
 		"title": "Before MYOB",
-		"body": [ "I’m originally from India but was born and brought-up in Oman. I moved to Australia for my higher",
+		"blogTxt": [ "I’m originally from India but was born and brought-up in Oman. I moved to Australia for my higher",
 		" studies. I graduated from Queensland University of Technology(QUT) with a Bachelors in Computer Engineering.",
 		" During this time, I was exposed to different programming languages like Java, C, C#, C++, Python and MATLAB ",
 		"and among them I enjoyed programming in Java and Python the most. My final year uni project was with the", 

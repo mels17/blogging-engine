@@ -30,28 +30,54 @@ var listOfPosts = [];
 var partial_url = [];
 for ( var i = 0; i <= Object.keys( file ).length; i++ ) {
 	listOfPosts[ i ] = url + (file.posts[ i ]).slug;
-	partial_url[ i ] = '/posts/' + (file.posts[ i ]).slug;
+	partial_url[ i ] = ( file.posts[ i ] ).slug;
 }
 
-app.use( function ( req, res, next ) {
-	var index = partial_url.indexOf( req.url );
-	if ( index != -1 ) {
-		res.status( 200 );
-		res.contentType( 'application/json' ).json( file.posts[ index ] );
-	} else if ( req.url == '/posts' ) {
-		res.status( 200 );
-		res.contentType('application/json').json( listOfPosts );
-	} else {
-		  res.status( 404 );
+// app.post( '/addPost', function( req, res, next ) {
+// 	res.setHeader( 'Content-Type', 'application/json' );
+// 	res.status( 201 );
+// 	res.send( { error: "iINT"});
+// });
+//var new_posts = [];
 
-		  // respond with json
-		  if ( req.accepts( 'json' ) ) {
-		    res.send({ error: 'Not found' });
-		    return;
-		  }		
+router.get( '/:id', function( req, res, next ) {
+	var index = partial_url.indexOf( req.params.id );
+	if ( index != -1 ) {
+		res.status( 200 )
+		res.contentType('application/json').json( file.posts[ index ] );
+	} else {
+		res.status( 404 );
+		res.contentType('application/json').json( { message: "URL not found."} );
 	}
+	next( );
 });
 
+router.get( '', function( req, res, next ) {
+	res.status( 200 );
+	res.contentType('application/json').json( listOfPosts );
+});
+
+router.route( '/addPost' ).post( function( req, res ) {
+		console.log("Entered post.");
+		var invalidSlug = req.body.slug == undefined || req.body.slug == null;
+		var invalidReq = req.body == undefined || req.body == null;
+		if ( invalidReq || invalidSlug ) {
+			res.status( 404 );
+			res.contentType( 'application/json' ).json( { message: "Invalid params." } );
+		} else {
+				var index = partial_url.indexOf( req.body.slug );
+				if ( index != -1 ){
+					res.status( 201 );
+					res.contentType('application/json').json( "Duplicate post." );			
+				} else {
+					(file.posts).push( req.body );
+					listOfPosts.push ( url + req.body.slug );
+					partial_url.push( req.body.slug );
+					res.status( 201 );
+					res.contentType('application/json').json( "Post added at " + "/"+req.body.slug );
+				}	
+		}
+	});
 
 // ROUTE REGISTRATION ----------------------------------------------------------------------
 // all of our routes will be prefixed with /api
