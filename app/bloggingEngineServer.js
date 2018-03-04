@@ -6,6 +6,10 @@
 // set our port
 var port = process.env.PORT || 8080;
 
+// Import PostgressSQL
+var pg = require( 'pg' );
+
+
 // import the packages we want
 var express = require( 'express' );
 // define app
@@ -107,7 +111,7 @@ router.put( '/:slug', function( req, res ) {
     delete posts[ req.params.slug ];
     posts[ req.body.slug ] = req.body;
 
-    postsRepository.updatePost(slug).with(req.);
+    // postsRepository.updatePost(slug).with(req);
 
     res.status(200).end( );
 });

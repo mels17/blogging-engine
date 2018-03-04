@@ -4,7 +4,7 @@
   "description": "Simple Blogging Engine App",
   "scripts": {
     "test": "./node_modules/.bin/jasmine-node --verbose --captureExceptions spec",
-    "server" : "node ./app/bloggingEngineServer.js"
+    "server": "node ./app/bloggingEngineServer.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
     "content-disposition": "^0.5.2",
     "express": "^4.16.2",
     "jasmine-node": "^1.14.5",
+    "pg": "^7.4.1",
     "request": "^2.83.0"
   },
   "devDependencies": {

@@ -1,7 +1,6 @@
 class Utils {
-  constructor(baseURLFactory) {
+  constructor(baseURL) {
     this.baseURL = baseURL;
-    this.factory= new baseURLFactory
   }
 
     urlForSlug(slug) {
