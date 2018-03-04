@@ -1,10 +1,10 @@
 {
   "name": "blogging-engine",
-  "server": "./app/bloggingEngineServer.js",
   "version": "1.0.0",
   "description": "Simple Blogging Engine App",
   "scripts": {
-    "test": "./node_modules/.bin/jasmine-node --verbose --captureExceptions spec"
+    "test": "./node_modules/.bin/jasmine-node --verbose --captureExceptions spec",
+    "server" : "node ./app/bloggingEngineServer.js"
   },
   "repository": {
     "type": "git",
