@@ -4,11 +4,12 @@ class Utils {
   }
 
     urlForSlug(slug) {
-      return this.baseURL + "/posts/" + slug;
+      return this.baseURL + "posts/" + slug;
     }
 
     urlForAllPosts() {
-      return this.baseURL + "/posts";
+      return this.baseURL + "posts/";
+
     }
 }
 

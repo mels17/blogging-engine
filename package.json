@@ -4,7 +4,7 @@
   "description": "Simple Blogging Engine App",
   "scripts": {
     "test": "./node_modules/.bin/jasmine-node --verbose --captureExceptions spec",
-    "server": "node ./app/bloggingEngineServer.js"
+    "start": "node ./app/index.js"
   },
   "repository": {
     "type": "git",
@@ -17,14 +17,19 @@
   },
   "homepage": "https://github.com/mels17/blogging-engine#readme",
   "dependencies": {
+    "bluebird": "^3.5.1",
     "commander": "^2.14.1",
     "content-disposition": "^0.5.2",
     "express": "^4.16.2",
     "jasmine-node": "^1.14.5",
     "pg": "^7.4.1",
-    "request": "^2.83.0"
+    "pg-hstore": "^2.3.2",
+    "pg-promise": "^5.9.7",
+    "request": "^2.83.0",
+    "sequelize": "^4.35.2"
   },
   "devDependencies": {
-    "jasmine": "^3.0.0"
+    "jasmine": "^3.0.0",
+    "supertest": "^3.0.0"
   }
 }
