@@ -140,6 +140,14 @@ class Database {
                 })
             })
     }
+
+    getTotalNumberOfBlogs( ) {
+        return this.Blog.count();
+    }
+
+    getTotalNumberOfComments( ) {
+        return this.Comments.count();
+    }
 }
 
 module.exports = Database;

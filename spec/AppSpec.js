@@ -66,9 +66,7 @@ describe("App", function () {
                 client.post('/posts')
                     .set('content-type', 'application/json')
                     .send(ex)
-                    .then(() => {
-                        done();
-                    });
+                    .then(done);
             });
 
             it("gets post list successfully", function (done) {
@@ -107,9 +105,7 @@ describe("App", function () {
                 client.post('/posts')
                     .set('content-type', 'application/json')
                     .send(ex)
-                    .then(() => {
-                        done();
-                    })
+                    .then(done);
             });
 
             it( "returns 204 after deleting post", function( done ) {
@@ -127,9 +123,7 @@ describe("App", function () {
                 client.post('/posts')
                     .set('content-type', 'application/json')
                     .send(ex)
-                    .then(() => {
-                        done();
-                    })
+                    .then(done);
             });
 
             it( "updates post successfully", function( done ) {
@@ -170,9 +164,7 @@ describe("App", function () {
                 client.post('/posts')
                     .set('content-type', 'application/json')
                     .send(ex)
-                    .then(() => {
-                        done();
-                    });
+                    .then(done());
             });
 
             it("adds comment successfully", function (done) {
@@ -194,34 +186,31 @@ describe("App", function () {
                 client.post('/posts')
                     .set('content-type', 'application/json')
                     .send(ex)
-                    .then(() => {
-                        done();
-                    });
+                    .then(done);
             });
 
             it( "gets comments for a blog post successfully", function( done ) {
                 client.post( '/posts/test/comments' )
                     .set( 'content-type', 'application/json' )
                     .send( commentEx )
-                    .then( () => {
-                        client.post( '/posts/test/comments' )
+                    .then(() => {
+                        return client.post( '/posts/test/comments' )
                             .set( 'content-type', 'application/json' )
-                            .send( commentExTwo )
-                            .then( () => {
-                                // Get comments successfully
-                                client.get( '/posts/test/comments' )
-                                    .then( res => {
-                                        expect( res.status ).toBe( 200 );
-                                        expect( res.body.length ).toBe( 2 );
-                                        expect( res.body[0].author ).toBe( commentEx.author );
-                                        expect( res.body[0].text ).toBe( commentEx.text );
-                                        expect( res.body[0].dateCreated ).toBe( commentEx.dateCreated );
-                                        expect( res.body[1].author ).toBe( commentExTwo.author );
-                                        expect( res.body[1].text ).toBe( commentExTwo.text );
-                                        expect( res.body[1].dateCreated ).toBe( commentExTwo.dateCreated );
-                                        done();
-                                    })
-                            });
+                            .send( commentExTwo );
+                    })
+                    .then(()=> {
+                        return client.get( '/posts/test/comments' )
+                    })
+                    .then( res => {
+                        expect( res.status ).toBe( 200 );
+                        expect( res.body.length ).toBe( 2 );
+                        expect( res.body[0].author ).toBe( commentEx.author );
+                        expect( res.body[0].text ).toBe( commentEx.text );
+                        expect( res.body[0].dateCreated ).toBe( commentEx.dateCreated );
+                        expect( res.body[1].author ).toBe( commentExTwo.author );
+                        expect( res.body[1].text ).toBe( commentExTwo.text );
+                        expect( res.body[1].dateCreated ).toBe( commentExTwo.dateCreated );
+                        done();
                     });
             });
         });
@@ -231,9 +220,7 @@ describe("App", function () {
                 client.post('/posts')
                     .set('content-type', 'application/json')
                     .send(ex)
-                    .then(() => {
-                        done();
-                    });
+                    .then(done);
             });
 
             it( "returns 204 after deleting comments", function( done ) {
@@ -241,11 +228,14 @@ describe("App", function () {
                     .set('content-type', 'application/json' )
                     .send( commentEx )
                     .then(() => {
-                        client.delete( '/posts/test/comments' )
-                            .then( (res) => {
-                                expect( res.status ).toBe( 204 );
-                                done();
-                            })
+                        return client.delete( '/posts/test/comments' )
+                    })
+                    .then( res => {
+                        console.log( db.getTotalNumberOfBlogs());
+                        console.log( this.app.getNoOfBlogs() );
+                        console.log( client.getNoOfBlogs());
+                        expect( res.status ).toBe( 204 );
+                        done();
                     })
             })
         })

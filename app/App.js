@@ -104,6 +104,14 @@ class App {
             res.status(204).end();
         });
     };
+
+    getNoOfComments( ) {
+        return this.db.getTotalNumberOfComments();
+    }
+
+    getNoOfBlogs( ) {
+        return this.db.getTotalNumberOfBlogs();
+    }
 }
 
 module.exports = App;
