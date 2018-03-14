@@ -31,8 +31,9 @@ class App {
         this.router.put('/:slug', this.update.bind(this) );
         this.router.delete('/:slug', this.delete.bind(this) );
 
-        this.router.post( '/:slug/comment', this.createComment.bind(this));
-        this
+        this.router.post( '/:slug/comments', this.createComment.bind(this));
+        this.router.get( '/:slug/comments', this.getComments.bind(this));
+        this.router.delete( '/:slug/comments', this.deleteComments.bind(this));
     }
 
     createComment( req, res, next ) {
@@ -40,8 +41,23 @@ class App {
         const comment = req.body;
         this.db.createComment ( givenSlug, comment ).then((comment) => {
             res.status( 201 );
-            const commentOb = { date: comment.date, text: comment.text, author:  comment.author };
+            const commentOb = { dateCreated: comment.dateCreated, text: comment.text, author:  comment.author };
             res.json( commentOb );
+        })
+    }
+
+    getComments( req, res, next ) {
+        const givenSlug = req.params.slug;
+        this.db.getComments( givenSlug ).then( ( comments ) => {
+            res.status( 200 );
+            res.json( comments );
+        })
+    }
+
+    deleteComments( req, res, next ) {
+        const givenSlug = req.params.slug;
+        this.db.deleteComments( givenSlug ).then( ( ) => {
+            res.status( 204 ).end( );
         })
     }
 

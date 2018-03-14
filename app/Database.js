@@ -46,8 +46,8 @@ class Database {
                 primaryKey: true,
                 autoIncrement: true
             },
-            date: {
-                type: Sequelize.DATE,
+            dateCreated: {
+                type: Sequelize.STRING,
                 allowNull: false
             },
             author: {
@@ -118,6 +118,28 @@ class Database {
             });
     }
 
+    getComments( slug ) {
+        return this.getBlog( slug )
+            .then( blog => {
+                if ( blog ) {
+                    // Get all the comments of this blog
+                    return this.Comments.findAll({
+                        where: {
+                            blogSlug: slug
+                        }
+                    });
+                }
+            });
+    }
+
+    deleteComments( slug ) {
+        return this.getComments( slug )
+            .then( comments => {
+                return comments.forEach( function(comment){
+                    comment.destroy( { force: true } );
+                })
+            })
+    }
 }
 
 module.exports = Database;
