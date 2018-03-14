@@ -42,20 +42,21 @@ describe("App", function () {
                     })
             });
 
-            it('get error when adding duplicate post', () => {
+            it('get error when adding duplicate post', (done) => {
                 const ex = {
                     slug: 'test',
                     title: 'test',
                     bodyTxt: 'test'
                 };
 
-                return client.post('/posts').set('content-type', 'application/json').send(ex)
+                client.post('/posts').set('content-type', 'application/json').send(ex)
                     .then( ( )=> {
                         const deletionPromise = client.post('/posts').set('content-type', 'application/json').send(ex);
                         deletionPromise
                             .catch(() => {
                                 expect(deletionPromise.isFulfilled()).toBeFalsy();
                             });
+                        done( );
                     });
             });
         });
@@ -86,9 +87,7 @@ describe("App", function () {
                 client.post('/posts')
                     .set('content-type', 'application/json')
                     .send(ex)
-                    .then(() => {
-                        done();
-                    });
+                    .then(done);
             });
 
             it("gets post successfully", function (done) {
@@ -113,7 +112,7 @@ describe("App", function () {
                     })
             });
 
-            it( "deletes post successfully", function( done ) {
+            it( "returns 204 after deleting post", function( done ) {
 
                 client.delete( '/posts/test' )
                     .then( res => {
@@ -237,7 +236,7 @@ describe("App", function () {
                     });
             });
 
-            it( "deletes all comments related to the post successfully", function( done ) {
+            it( "returns 204 after deleting comments", function( done ) {
                 client.post( '/posts/test/comments' )
                     .set('content-type', 'application/json' )
                     .send( commentEx )
