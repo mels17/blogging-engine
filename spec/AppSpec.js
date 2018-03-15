@@ -164,7 +164,7 @@ describe("App", function () {
                 client.post('/posts')
                     .set('content-type', 'application/json')
                     .send(ex)
-                    .then(done());
+                    .then(done);
             });
 
             it("adds comment successfully", function (done) {
@@ -224,19 +224,22 @@ describe("App", function () {
             });
 
             it( "returns 204 after deleting comments", function( done ) {
-                client.post( '/posts/test/comments' )
+                return client.post( '/posts/test/comments' )
                     .set('content-type', 'application/json' )
                     .send( commentEx )
-                    .then(() => {
+                    .then((res) => {
+                        // expect(res.body.length).toBe(1);
+                        console.log(res.body.length);
                         return client.delete( '/posts/test/comments' )
                     })
                     .then( res => {
-                        console.log( db.getTotalNumberOfBlogs());
-                        console.log( this.app.getNoOfBlogs() );
-                        console.log( client.getNoOfBlogs());
                         expect( res.status ).toBe( 204 );
-                        done();
+                        return client.get("/posts/test/comments" )
                     })
+                    .then( comment => {
+                        expect(comment.body.length).toBe(0);
+                    })
+                    .then(done);
             })
         })
         });

@@ -127,9 +127,9 @@ class Database {
                         where: {
                             blogSlug: slug
                         }
-                    });
+                    })
                 }
-            });
+            })
     }
 
     deleteComments( slug ) {
@@ -139,14 +139,6 @@ class Database {
                     comment.destroy( { force: true } );
                 })
             })
-    }
-
-    getTotalNumberOfBlogs( ) {
-        return this.Blog.count();
-    }
-
-    getTotalNumberOfComments( ) {
-        return this.Comments.count();
     }
 }
 

@@ -38,11 +38,11 @@ class App {
 
     createComment( req, res, next ) {
         const givenSlug = req.params.slug;
-        const comment = req.body;
-        this.db.createComment ( givenSlug, comment ).then((comment) => {
+        const givenComment = req.body;
+        this.db.createComment ( givenSlug, givenComment ).then((comment) => {
             res.status( 201 );
-            const commentOb = { dateCreated: comment.dateCreated, text: comment.text, author:  comment.author };
-            res.json( commentOb );
+            // const commentOb = { dateCreated: comment.dateCreated, text: comment.text, author:  comment.author };
+            res.json( comment );
         })
     }
 
@@ -104,14 +104,6 @@ class App {
             res.status(204).end();
         });
     };
-
-    getNoOfComments( ) {
-        return this.db.getTotalNumberOfComments();
-    }
-
-    getNoOfBlogs( ) {
-        return this.db.getTotalNumberOfBlogs();
-    }
 }
 
 module.exports = App;
