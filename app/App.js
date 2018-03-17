@@ -36,49 +36,60 @@ class App {
         this.router.delete( '/:slug/comments', this.deleteComments.bind(this));
     }
 
-    createComment( req, res, next ) {
+    createComment( req, res ) {
         const givenSlug = req.params.slug;
         const givenComment = req.body;
-        this.db.createComment ( givenSlug, givenComment ).then((comment) => {
+        return this.db.createComment ( givenSlug, givenComment ).then((comment) => {
             res.status( 201 );
-            // const commentOb = { dateCreated: comment.dateCreated, text: comment.text, author:  comment.author };
             res.json( comment );
         })
     }
 
-    getComments( req, res, next ) {
+//     it('something', () => {
+//         db = mock()
+//         when(db.createComment).thenReturn(Promise -> (comment))
+//         app = new App(db)
+//     req = mock()
+//     res = mock()
+//     app.createComment(req, res)
+//     expect(res).toReceive(status).with(201)
+// })
+
+
+    getComments( req, res ) {
         const givenSlug = req.params.slug;
-        this.db.getComments( givenSlug ).then( ( comments ) => {
+        return this.db.getComments( givenSlug ).then( ( comments ) => {
             res.status( 200 );
             res.json( comments );
         })
     }
 
-    deleteComments( req, res, next ) {
+    deleteComments( req, res ) {
         const givenSlug = req.params.slug;
-        this.db.deleteComments( givenSlug ).then( ( ) => {
-            res.status( 204 ).end( );
+        return this.db.deleteComments( givenSlug ).then( ( ) => {
+            res.status( 204 );
+            res.end( );
         })
     }
 
-    create(req, res, next) {
+    create(req, res ) {
         const blog = req.body;
-        this.db.createBlog( blog ).then((blog)=>{
+        return this.db.createBlog( blog ).then((blog)=>{
             res.status(201);
             res.json( blog );
         })
     };
 
-    get(req, res, next) {
+    get(req, res ) {
         const slug = req.params.slug;
-        this.db.getBlog( slug ).then((blog)=>{
+        return this.db.getBlog( slug ).then((blog)=>{
             res.status( 200 );
             res.json( blog );
         });
     };
 
-    list(req, res, next) {
-        this.db.listBlogs().then((blogList)=>{
+    list(req, res ) {
+        return this.db.listBlogs().then((blogList)=>{
             const blogSlugs = blogList.map(blog => {
                 return utils.urlForSlug( blog.slug );
             });
@@ -88,20 +99,21 @@ class App {
         });
     };
 
-    update(req,res,next) {
+    update( req, res ) {
         const slug = req.params.slug;
         const update = req.body;
-        this.db.updateBlog( slug, update ).then((blog)=>{
+        return this.db.updateBlog( slug, update ).then((blog)=>{
             res.status(200);
             res.json( blog );
         })
 
     };
 
-    delete( req, res, next ) {
+    delete( req, res ) {
         const slug = req.params.slug;
-        this.db.deleteBlog( slug ).then(()=>{
-            res.status(204).end();
+        return this.db.deleteBlog( slug ).then(()=>{
+            res.status(204);
+            res.end();
         });
     };
 }

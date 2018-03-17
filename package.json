@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Simple Blogging Engine App",
   "scripts": {
-    "test": "./node_modules/.bin/jasmine-node --verbose --captureExceptions spec",
+    "test": "jasmine",
     "start": "node ./app/index.js"
   },
   "repository": {
@@ -21,6 +21,7 @@
     "commander": "^2.14.1",
     "content-disposition": "^0.5.2",
     "express": "^4.16.2",
+    "jasmine-idea-runner": "^1.0.1",
     "jasmine-node": "^1.14.5",
     "pg": "^7.4.1",
     "pg-hstore": "^2.3.2",
@@ -29,7 +30,8 @@
     "sequelize": "^4.35.2"
   },
   "devDependencies": {
-    "jasmine": "^3.0.0",
+    "jasmine": "^3.1.0",
+    "sinon": "^4.4.6",
     "supertest": "^3.0.0"
   }
 }

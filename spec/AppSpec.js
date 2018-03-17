@@ -2,245 +2,275 @@ const request = require('supertest');
 const Database = require('../app/Database');
 const App = require('../app/App');
 const Sequelize = require('sequelize');
+const sinon = require('sinon');
 
-describe("App", function () {
-    const connectionString = `postgres://postgres:postgres@localhost:5432/postgres`;
-    const seq = new Sequelize(connectionString);
-    const db = new Database(seq);
+describe('Unit Test App', function () {
+    const db = new Database();
     const app = new App(db);
-    let client;
+    const dbMock = sinon.mock(db);
 
-
-    const ex = {
-        slug: 'test',
-        title: 'test title',
-        bodyTxt: 'test body'
-    };
-
-
-    beforeEach(function (done) {
-        db.init()
-            .then(() => {
-                app.init();
-                client = request(app.app);
-                done();
-            });
+    beforeEach(function() {
+        dbMock.restore();
     });
 
-    describe( "Blog", function( ) {
-        describe("POST /posts", function () {
-            it('should create a post', (done) => {
-                client.post('/posts')
-                    .set('content-type', 'application/json')
-                    .send(ex)
-                    .then(res => {
-                        expect(res.status).toBe(201);
-                        expect(res.body.slug).toBe(ex.slug);
-                        expect(res.body.bodyTxt).toBe(ex.bodyTxt);
-                        expect(res.body.title).toBe(ex.title);
-                        done();
-                    })
-            });
-
-            it('get error when adding duplicate post', (done) => {
-                const ex = {
-                    slug: 'test',
-                    title: 'test',
-                    bodyTxt: 'test'
-                };
-
-                client.post('/posts').set('content-type', 'application/json').send(ex)
-                    .then( ( )=> {
-                        const deletionPromise = client.post('/posts').set('content-type', 'application/json').send(ex);
-                        deletionPromise
-                            .catch(() => {
-                                expect(deletionPromise.isFulfilled()).toBeFalsy();
-                            });
-                        done( );
-                    });
-            });
-        });
-
-        describe("GET /posts", function () {
-            beforeEach(function (done) {
-                client.post('/posts')
-                    .set('content-type', 'application/json')
-                    .send(ex)
-                    .then(done);
-            });
-
-            it("gets post list successfully", function (done) {
-                client.get('/posts')
-                    .then(res => {
-                        expect(res.status).toBe(200);
-                        expect( res.body ).toEqual(["http://localhost:3000/posts/test"]);
-                        done();
-                    })
-            });
-        });
-
-
-        describe("GET /slug", function () {
-            beforeEach(function (done) {
-                client.post('/posts')
-                    .set('content-type', 'application/json')
-                    .send(ex)
-                    .then(done);
-            });
-
-            it("gets post successfully", function (done) {
-                client.get('/posts/test')
-                    .then(res => {
-                        expect(res.status).toBe(200);
-                        expect(res.body.slug).toBe(ex.slug);
-                        expect(res.body.bodyTxt).toBe(ex.bodyTxt);
-                        expect(res.body.title).toBe(ex.title);
-                        done();
-                    })
-            });
-        });
-
-        describe(`DELETE /posts/:slug`, function () {
-            beforeEach(function (done) {
-                client.post('/posts')
-                    .set('content-type', 'application/json')
-                    .send(ex)
-                    .then(done);
-            });
-
-            it( "returns 204 after deleting post", function( done ) {
-
-                client.delete( '/posts/test' )
-                    .then( res => {
-                        expect( res.status ).toBe( 204 );
-                        done();
-                    });
-            });
-        });
-
-        describe( 'PUT /posts', function( ) {
-            beforeEach(function (done) {
-                client.post('/posts')
-                    .set('content-type', 'application/json')
-                    .send(ex)
-                    .then(done);
-            });
-
-            it( "updates post successfully", function( done ) {
-
-                const updateEx = {
-                    slug: 'updatedTest',
-                    title: 'updated test title',
-                    bodyTxt: 'updated test body'
-                };
-
-                client.put( '/posts/test' )
-                    .set('content-type', 'application/json')
-                    .send(updateEx)
-                    .then( res => {
-                        expect( res.status ).toBe( 200 );
-                        done();
-                    });
-            });
-
-        });
-    });
-
-    describe( "Comments", function() {
-        const commentEx = {
-            dateCreated: "2018-03-03",
-            author: "example author",
-            text: "example comment text"
+    describe( 'Blogs', function () {
+        const blog = {
+            slug: 'test',
+            title: 'test title',
+            bodyTxt: 'test body'
         };
 
-        const commentExTwo = {
-            dateCreated: "2018-03-28",
-            author: "author two",
-            text: "example text two"
-        };
+        it( "add post successfully", function (done) {
+            const res = {
+                status: () => {},
+                json: () => {}
+            };
 
-        describe( "POST /posts/:slug/comments", function( ) {
-            beforeEach(function (done) {
-                client.post('/posts')
-                    .set('content-type', 'application/json')
-                    .send(ex)
-                    .then(done);
-            });
+            const resMock = sinon.mock( res );
 
-            it("adds comment successfully", function (done) {
-                client.post('/posts/test/comments')
-                    .set( 'content-type', 'application/json' )
-                    .send( commentEx )
-                    .then(res => {
-                        expect(res.status).toBe(201);
-                        expect( res.body.author ).toBe( commentEx.author );
-                        expect( res.body.text ).toBe( commentEx.text );
-                        expect( res.body.dateCreated ).toBe( commentEx.dateCreated );
-                        done();
-                    })
-            });
+            const req = {
+                body: blog
+            };
+
+            dbMock.expects( "createBlog" ).once().withArgs(blog).returns(Promise.resolve(blog));
+
+            resMock.expects("status").once().withArgs(201);
+            resMock.expects("json").once().withArgs(blog);
+
+            app.create(req, res)
+                .then(() => {
+                    dbMock.verify();
+                    resMock.verify();
+                    done();
+                });
         });
 
-        describe( "GET /posts/:slug/comments", function( ) {
-            beforeEach(function (done) {
-                client.post('/posts')
-                    .set('content-type', 'application/json')
-                    .send(ex)
-                    .then(done);
-            });
 
-            it( "gets comments for a blog post successfully", function( done ) {
-                client.post( '/posts/test/comments' )
-                    .set( 'content-type', 'application/json' )
-                    .send( commentEx )
-                    .then(() => {
-                        return client.post( '/posts/test/comments' )
-                            .set( 'content-type', 'application/json' )
-                            .send( commentExTwo );
-                    })
-                    .then(()=> {
-                        return client.get( '/posts/test/comments' )
-                    })
-                    .then( res => {
-                        expect( res.status ).toBe( 200 );
-                        expect( res.body.length ).toBe( 2 );
-                        expect( res.body[0].author ).toBe( commentEx.author );
-                        expect( res.body[0].text ).toBe( commentEx.text );
-                        expect( res.body[0].dateCreated ).toBe( commentEx.dateCreated );
-                        expect( res.body[1].author ).toBe( commentExTwo.author );
-                        expect( res.body[1].text ).toBe( commentExTwo.text );
-                        expect( res.body[1].dateCreated ).toBe( commentExTwo.dateCreated );
-                        done();
-                    });
-            });
+        it( "gets post successfully", function (done) {
+            const slug = "example";
+
+            const res = {
+                status: () => {},
+                json: () => {}
+            };
+
+            const resMock = sinon.mock( res );
+
+            const req = {
+                params: {
+                    slug: slug
+                }
+            };
+
+            dbMock.expects( "getBlog" ).once().withArgs(slug).returns(Promise.resolve());
+
+            resMock.expects("status").once().withArgs(200);
+            resMock.expects("json").once().withArgs();
+
+            app.get(req, res)
+                .then(() => {
+                    dbMock.verify();
+                    resMock.verify();
+                    done();
+                });
         });
 
-        describe( "DELETE /posts/:slug/comments", function( ) {
-            beforeEach(function (done) {
-                client.post('/posts')
-                    .set('content-type', 'application/json')
-                    .send(ex)
-                    .then(done);
-            });
 
-            it( "returns 204 after deleting comments", function( done ) {
-                return client.post( '/posts/test/comments' )
-                    .set('content-type', 'application/json' )
-                    .send( commentEx )
-                    .then((res) => {
-                        // expect(res.body.length).toBe(1);
-                        console.log(res.body.length);
-                        return client.delete( '/posts/test/comments' )
-                    })
-                    .then( res => {
-                        expect( res.status ).toBe( 204 );
-                        return client.get("/posts/test/comments" )
-                    })
-                    .then( comment => {
-                        expect(comment.body.length).toBe(0);
-                    })
-                    .then(done);
-            })
+        it( "gets list of posts successfully", function (done) {
+            const bloglist = [ "http://localhost:3000/posts/undefined" ];
+
+            const res = {
+                status: () => {},
+                json: () => {}
+            };
+
+            const resMock = sinon.mock( res );
+
+            const req = {};
+
+            dbMock.expects( "listBlogs" ).once().withArgs().returns(Promise.resolve(bloglist));
+
+
+            resMock.expects("status").once().withArgs(200);
+            resMock.expects("json").once().withArgs(bloglist);
+
+            app.list(req, res)
+                .then(() => {
+                    dbMock.verify();
+                    resMock.verify();
+                    done();
+                });
+        });
+
+        it( "updates post successfully", function(done) {
+            const updatedBlog = {
+                slug: 'test',
+                title: 'test title',
+                bodyTxt: 'test body'
+            };
+
+            const slug = "example";
+
+
+            const res = {
+                status: () => {},
+                json: () => {}
+            };
+
+            const resMock = sinon.mock( res );
+
+            const req = {
+                params:{
+                    slug: slug
+                },
+                body: updatedBlog
+            };
+
+            dbMock.expects( "updateBlog" ).once().withArgs( slug, updatedBlog ).returns(Promise.resolve(updatedBlog));
+
+            resMock.expects( "status" ).once( ).withArgs( 200 );
+            resMock.expects( "json" ).once( ).withArgs( updatedBlog );
+
+            app.update(req, res)
+                .then(() => {
+                    dbMock.verify();
+                    resMock.verify();
+                    done();
+                });
+        });
+
+        it ( "deletes post successfully", function(done) {
+
+            const slug = "example";
+
+            const res = {
+                status: () => {},
+                end: () => {}
+            };
+
+            const resMock = sinon.mock( res );
+
+            const req = {
+                params: {
+                    slug: slug
+                }
+            };
+
+            dbMock.expects( "deleteBlog" ).once().withArgs( slug ).returns(Promise.resolve());
+
+            resMock.expects( "status" ).once( ).withArgs( 204 );
+            resMock.expects( "end" ).once( ).withArgs();
+
+            app.delete(req, res)
+                .then(() => {
+                    dbMock.verify();
+                    resMock.verify();
+                    done();
+                });
         })
+    });
+
+    describe('Comments', function () {
+        it('should get comments successfully', function (done) {
+            const slug = "example";
+            const comments = [
+                {
+                    dateCreated: "2018-03-03",
+                    author: "example author",
+                    text: "example comment text"
+                }
+            ];
+
+            const res = {
+                status: () => {},
+                json: () => {}
+            };
+
+            const resMock = sinon.mock(res);
+
+            const req = {
+                params: {
+                    slug: slug
+                }
+            };
+
+            dbMock.expects("getComments").once().withArgs(slug).returns(Promise.resolve(comments));
+
+            resMock.expects("status").once().withArgs(200);
+            resMock.expects("json").once().withArgs(comments);
+
+            app.getComments(req, res)
+                .then(() => {
+                    dbMock.verify();
+                    resMock.verify();
+                    done();
+                });
         });
+
+
+        it('should delete comments successfully', function (done) {
+            const slug = "example";
+
+            const res = {
+                status: () => {},
+                end: () => {}
+            };
+
+            const resMock = sinon.mock(res);
+
+            const req = {
+                params: {
+                    slug: slug
+                }
+            };
+
+            dbMock.expects("deleteComments").once().withArgs(slug).returns(Promise.resolve());
+
+            resMock.expects("status").once().withArgs(204);
+            resMock.expects("end").once().withArgs();
+
+            app.deleteComments(req, res)
+                .then(() => {
+                    dbMock.verify();
+                    resMock.verify();
+                    done();
+                });
+        });
+
+        it('should create comments successfully', function (done) {
+            const slug = "example";
+
+            const comment = [{
+                dateCreated: "2018-03-03",
+                author: "example author",
+                text: "example comment text"
+            }];
+
+            const res = {
+                status: () => {},
+                json: () => {}
+            };
+
+            const resMock = sinon.mock(res);
+
+            const req = {
+                params: {
+                    slug: slug
+                },
+                body: comment[0]
+            };
+
+            dbMock.expects("createComment").once().withArgs(slug, comment[0]).returns(Promise.resolve(comment));
+
+            resMock.expects("status").once().withArgs(201);
+            resMock.expects("json").once().withArgs(comment);
+
+            app.createComment(req, res)
+                .then(() => {
+                    dbMock.verify();
+                    resMock.verify();
+                    done();
+                });
+        })
+    } )
 });
