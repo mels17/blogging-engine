@@ -3,18 +3,25 @@ const Sequelize = require( 'sequelize' );
 class Database {
     constructor(sequelize) {
         this.sequelize = sequelize;
+        console.log("Database instantiated");
     }
 
-    init() {
-        this.createBlogModel();
-        this.createCommentModel();
-
+    init(factory) {
+        console.log("Initializing database...");
+        // this.createBlogModel();
+        // this.Blog = factory.buildBlog
+        this.Blog = this.createBlogModel();
+        this.Comments = this.createCommentModel();
+        this.Comments.belongsTo(this.Blog);
+        console.log("Blogs and comments table created");
         // Establishing a relation between the two tables. this will automatically create blogSlug field
         // which is the foreign key, in the comments table.
-        this.Comments.belongsTo( this.Blog );
-
+        // this.Comments.belongsTo( this.Blog );
+        console.log("Established relation between Blogs and Comments");
+        // console.log(this.sequelize.authenticate());
         return this.sequelize.authenticate()
             .then(() => {
+                console.log("Erasing database...");
                 return this.sequelize.sync({
                     force: true
                 })
@@ -22,7 +29,7 @@ class Database {
     }
 
     createBlogModel() {
-        this.Blog = this.sequelize.define('blogs', {
+        return this.sequelize.define('blogs', {
             slug: {
                 type: Sequelize.STRING,
                 primaryKey: true,
@@ -40,7 +47,7 @@ class Database {
     }
 
     createCommentModel( ) {
-        this.Comments = this.sequelize.define( 'comments', {
+        return this.sequelize.define( 'comments', {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
@@ -84,7 +91,9 @@ class Database {
     updateBlog(slug, updatedBlog) {
         return this.getBlog(slug)
             .then(blog => {
-                return blog.get(updatedBlog.slug);
+                // return blog.get(updatedBlog.slug);
+                // blog.slug = updatedBlog.slug;
+                return blog.update(updatedBlog);
             })
     }
 
@@ -99,7 +108,7 @@ class Database {
     deleteBlog(slug) {
         return this.getBlog(slug)
             .then(blog => {
-                return blog.destroy({ force: true });
+                return blog.destroy({  force: true });
             });
     }
 

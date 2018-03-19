@@ -1,7 +1,6 @@
 const request = require('supertest');
 const Database = require('../app/Database');
 const App = require('../app/App');
-const Sequelize = require('sequelize');
 const sinon = require('sinon');
 
 describe('Unit Test App', function () {
