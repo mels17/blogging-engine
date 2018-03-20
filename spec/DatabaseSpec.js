@@ -43,30 +43,21 @@ describe("Isolation tests for Database", function () {
     });
 
     it("Database initialized successfully", function (done) {
-        const database = new Database(factory);
 
-        sinon.stub(database.factory, 'createTables').withArgs().returns([blogTable, commentTable]);
-        sinon.stub(database.factory, 'eraseDBIfExists').withArgs().returns(Promise.resolve());
+        sinon.stub(factory, 'createTables').withArgs().returns([blogTable, commentTable]);
+        sinon.stub(factory, 'eraseDBIfExists').withArgs().returns(Promise.resolve());
+
+        const database = new Database(factory);
 
         database.init()
             .then(res => {
                 expect(res).toBeUndefined();
-                database.factory.createTables.restore();
-                database.factory.eraseDBIfExists.restore();
+                factory.createTables.restore();
+                factory.eraseDBIfExists.restore();
                 done();
             })
     });
 
-    beforeEach(function () {
-        db = new Database(factory);
-        sinon.stub(db.factory, 'createTables').withArgs().returns([blogTable, commentTable]);
-        sinon.stub(db.factory, 'eraseDBIfExists').withArgs().returns(Promise.resolve());
-        db.init();
-        db.factory.createTables.restore();
-        db.factory.eraseDBIfExists.restore();
-        commentTableMock.restore();
-        blogTableMock.restore();
-    });
 
     describe("Blog table", function () {
         const blogOne = {
@@ -84,28 +75,47 @@ describe("Isolation tests for Database", function () {
         const blogOnePromise = Promise.resolve(blogOne);
         const blogTwoPromise = Promise.resolve(blogTwo);
 
+        beforeEach(function (done) {
+
+            sinon.stub(factory, 'createTables').withArgs().returns([blogTable, commentTable]);
+            sinon.stub(factory, 'eraseDBIfExists').withArgs().returns(Promise.resolve());
+
+            db = new Database(factory);
+
+            db.init();
+            done();
+        });
+
+        afterEach( function (done) {
+            factory.createTables.restore();
+            factory.eraseDBIfExists.restore();
+            commentTableMock.restore();
+            blogTableMock.restore();
+            done();
+        });
+
         describe("testing creating blog function", function () {
             it("createBlog function returns blog promise", function (done) {
-                sinon.stub(db.Blog, 'findOne').withArgs({where: {slug: blogOne.slug}}).returns(Promise.resolve());
-                sinon.stub(db.Blog, 'create').withArgs(blogOne).returns(blogOnePromise);
+                sinon.stub(blogTable, 'findOne').withArgs({where: {slug: blogOne.slug}}).returns(Promise.resolve());
+                sinon.stub(blogTable, 'create').withArgs(blogOne).returns(blogOnePromise);
 
                 db.createBlog(blogOne)
                     .then((result) => {
                         expect(result).toBe(blogOne);
-                        db.Blog.findOne.restore();
-                        db.Blog.create.restore();
+                        blogTable.findOne.restore();
+                        blogTable.create.restore();
                         done();
                     })
             });
 
             it("throws error when createBlog is called with a duplicate post", function (done) {
-                sinon.stub(db.Blog, 'findOne').withArgs({where: {slug: blogOne.slug}}).returns(blogOnePromise);
+                sinon.stub(blogTable, 'findOne').withArgs({where: {slug: blogOne.slug}}).returns(blogOnePromise);
 
                 var rejectedPromise = db.createBlog(blogOne);
 
                 rejectedPromise.catch(err => {
                     expect(err.message).toBe('Duplicate post');
-                    db.Blog.findOne.restore();
+                    blogTable.findOne.restore();
                     done();
                 });
             });
@@ -133,25 +143,25 @@ describe("Isolation tests for Database", function () {
                 }
             };
 
-            sinon.stub(db.Blog, 'findOne').withArgs({where: {slug: blog.slug}}).returns(Promise.resolve(blog));
+            sinon.stub(blogTable, 'findOne').withArgs({where: {slug: blog.slug}}).returns(Promise.resolve(blog));
 
             sinon.stub(blog, 'update').withArgs(blogTwo).returns(blogTwoPromise);
 
             db.updateBlog(blog.slug, blogTwo)
                 .then(result => {
                     expect(result).toBe(blogTwo);
-                    db.Blog.findOne.restore();
+                    blogTable.findOne.restore();
                     blog.update.restore();
                     done();
                 })
         });
 
         it("getBlog returns the blog promise", function (done) {
-            sinon.stub(db.Blog, 'findOne').withArgs({where: {slug: blogOne.slug}}).returns(blogOnePromise);
+            sinon.stub(blogTable, 'findOne').withArgs({where: {slug: blogOne.slug}}).returns(blogOnePromise);
             db.getBlog(blogOne.slug)
                 .then(result => {
                     expect(result).toBe(blogOne);
-                    db.Blog.findOne.restore();
+                    blogTable.findOne.restore();
                     done();
                 })
         });
@@ -164,13 +174,13 @@ describe("Isolation tests for Database", function () {
                 destroy: () => {
                 }
             };
-            sinon.stub(db.Blog, 'findOne').withArgs({where: {slug: blog.slug}}).returns(Promise.resolve(blog));
+            sinon.stub(blogTable, 'findOne').withArgs({where: {slug: blog.slug}}).returns(Promise.resolve(blog));
             sinon.stub(blog, 'destroy').withArgs({force: true}).returns(Promise.resolve());
 
             db.deleteBlog(blog.slug)
                 .then((res) => {
                     expect(res).toBeUndefined();
-                    db.Blog.findOne.restore();
+                    blogTable.findOne.restore();
                     blog.destroy.restore();
                     done();
                 })
@@ -194,24 +204,24 @@ describe("Isolation tests for Database", function () {
         const blogOnePromise = Promise.resolve(blogOne);
 
         beforeEach( function (done) {
-            sinon.stub(db.Blog, 'findOne').withArgs({where: {slug: blogOne.slug}}).returns(blogOnePromise);
+            sinon.stub(blogTable, 'findOne').withArgs({where: {slug: blogOne.slug}}).returns(blogOnePromise);
             done();
         });
 
         afterEach(function (done) {
-            db.Blog.findOne.restore();
+            blogTable.findOne.restore();
             done();
         });
 
         it("create comment returns comment promise", function (done) {
 
 
-            sinon.stub(db.Comments, 'create').withArgs(comment).returns(commentPromise);
+            sinon.stub(commentTable, 'create').withArgs(comment).returns(commentPromise);
 
             db.createComment(blogOne.slug, comment)
                 .then((res) => {
                     expect(res).toBe(comment);
-                    db.Comments.create.restore();
+                    commentTable.create.restore();
                     done();
                 })
         });
@@ -224,12 +234,12 @@ describe("Isolation tests for Database", function () {
                 slug: blogOne.slug
             };
 
-            sinon.stub(db.Comments, 'findAll').withArgs({where: {slug: blogOne.slug}}).returns(Promise.resolve([commentGet]));
+            sinon.stub(commentTable, 'findAll').withArgs({where: {slug: blogOne.slug}}).returns(Promise.resolve([commentGet]));
 
             db.getComments(blogOne.slug)
                 .then(result => {
                     expect(result[0]).toBe(commentGet);
-                    db.Comments.findAll.restore();
+                    commentTable.findAll.restore();
                     done();
                 })
         });
@@ -243,14 +253,14 @@ describe("Isolation tests for Database", function () {
                 destroy: () => {
                 }
             };
-            sinon.stub(db.Comments, 'findAll').withArgs({where: {slug: blogOne.slug}}).returns(Promise.resolve([commentDelete]));
+            sinon.stub(commentTable, 'findAll').withArgs({where: {slug: blogOne.slug}}).returns(Promise.resolve([commentDelete]));
             sinon.stub(commentDelete, 'destroy').withArgs({force: true}).returns(Promise.resolve());
 
 
             db.deleteComments(blogOne.slug)
                 .then(result => {
                     expect(result).toBeUndefined();
-                    db.Comments.findAll.restore();
+                    commentTable.findAll.restore();
                     commentDelete.destroy.restore();
                     done();
                 })
