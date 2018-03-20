@@ -1,0 +1,85 @@
+const Sequelize = require('sequelize');
+
+class DatabaseInitFactory{
+    constructor(sequelize) {
+        this.sequelize = sequelize;
+    }
+
+    // Establishing a one-to-one relation between the two tables. this will automatically create blogSlug field
+    // which is the foreign key, in the comments table.
+    establishRelationBetweenModels(blogs, comments) {
+        comments.belongsTo( blogs );
+        return [blogs, comments];
+    }
+
+    createModels() {
+        const comments = this.createCommentModel();
+        const blogs = this.createBlogModel();
+
+        console.log("Blogs and comments table created");
+
+        console.log("Establish relation between Blogs and Comments");
+
+        return this.establishRelationBetweenModels(blogs, comments);
+    }
+
+    createBlogModel() {
+        return this.sequelize.define('blogs', {
+            id: {
+                type: Sequelize.INTEGER,
+                primaryKey: true,
+                autoIncrement: true
+            },
+            slug: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
+            title: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            bodyTxt: {
+                type: Sequelize.TEXT,
+                allowNull: false
+            }
+        });
+    }
+
+    createCommentModel( ) {
+        return this.sequelize.define( 'comments', {
+            id: {
+                type: Sequelize.INTEGER,
+                primaryKey: true,
+                autoIncrement: true
+            },
+            dateCreated: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            author: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            text: {
+                type: Sequelize.TEXT,
+                allowNull: false
+            },
+            slug: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            }
+        })
+    }
+
+    eraseDBIfExists() {
+        return this.sequelize.authenticate()
+            .then(() => {
+                console.log("Erasing database...");
+                return this.sequelize.sync({
+                    force: true
+                })
+            });
+    }
+}
+
+module.exports = DatabaseInitFactory;

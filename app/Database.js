@@ -1,71 +1,18 @@
 const Sequelize = require( 'sequelize' );
+const DatabaseInitFactory = require('./DatabaseInitFactory');
 
 class Database {
-    constructor(sequelize) {
-        this.sequelize = sequelize;
+    constructor(databaseInitFactory) {
+        this.factory = databaseInitFactory;
         console.log("Database instantiated");
     }
 
-    init(factory) {
+    init() {
         console.log("Initializing database...");
-        // this.createBlogModel();
-        // this.Blog = factory.buildBlog
-        this.Blog = this.createBlogModel();
-        this.Comments = this.createCommentModel();
-        this.Comments.belongsTo(this.Blog);
-        console.log("Blogs and comments table created");
-        // Establishing a relation between the two tables. this will automatically create blogSlug field
-        // which is the foreign key, in the comments table.
-        // this.Comments.belongsTo( this.Blog );
-        console.log("Established relation between Blogs and Comments");
-        // console.log(this.sequelize.authenticate());
-        return this.sequelize.authenticate()
-            .then(() => {
-                console.log("Erasing database...");
-                return this.sequelize.sync({
-                    force: true
-                })
-            });
-    }
 
-    createBlogModel() {
-        return this.sequelize.define('blogs', {
-            slug: {
-                type: Sequelize.STRING,
-                primaryKey: true,
-                allowNull: false
-            },
-            title: {
-                type: Sequelize.STRING,
-                allowNull: false
-            },
-            bodyTxt: {
-                type: Sequelize.TEXT,
-                allowNull: false
-            }
-        });
-    }
+        [this.Blog, this.Comments] = this.factory.createModels();
 
-    createCommentModel( ) {
-        return this.sequelize.define( 'comments', {
-            id: {
-                type: Sequelize.INTEGER,
-                primaryKey: true,
-                autoIncrement: true
-            },
-            dateCreated: {
-                type: Sequelize.STRING,
-                allowNull: false
-            },
-            author: {
-                type: Sequelize.STRING,
-                allowNull: false
-            },
-            text: {
-                type: Sequelize.TEXT,
-                allowNull: false
-            }
-        })
+        return this.factory.eraseDBIfExists();
     }
 
 
@@ -121,7 +68,7 @@ class Database {
         return this.getBlog(slug)
             .then( blog => {
                 if (blog) {
-                    comment.blogSlug = slug;
+                    comment.slug = slug;
                     return this.Comments.create( comment );
                 }
             });
@@ -134,7 +81,7 @@ class Database {
                     // Get all the comments of this blog
                     return this.Comments.findAll({
                         where: {
-                            blogSlug: slug
+                            slug: slug
                         }
                     })
                 }

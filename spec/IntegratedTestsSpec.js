@@ -2,12 +2,13 @@ const request = require('supertest');
 const Database = require('../app/Database');
 const App = require('../app/App');
 const Sequelize = require('sequelize');
-
+const DatabaseInitFactory = require('../app/DatabaseInitFactory');
 
 describe("App", function () {
     const connectionString = `postgres://postgres:postgres@localhost:5432/postgres`;
     const seq = new Sequelize(connectionString);
-    const db = new Database(seq);
+    const dbInit = new DatabaseInitFactory(seq);
+    const db = new Database(dbInit);
     const app = new App(db);
     let client;
 
