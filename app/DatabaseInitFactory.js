@@ -7,23 +7,23 @@ class DatabaseInitFactory{
 
     // Establishing a one-to-one relation between the two tables. this will automatically create blogSlug field
     // which is the foreign key, in the comments table.
-    establishRelationBetweenModels(blogs, comments) {
+    establishRelationBetweenTables(blogs, comments) {
         comments.belongsTo( blogs );
         return [blogs, comments];
     }
 
-    createModels() {
-        const comments = this.createCommentModel();
-        const blogs = this.createBlogModel();
+    createTables() {
+        const comments = this.createCommentTable();
+        const blogs = this.createBlogTable();
 
         console.log("Blogs and comments table created");
 
         console.log("Establish relation between Blogs and Comments");
 
-        return this.establishRelationBetweenModels(blogs, comments);
+        return this.establishRelationBetweenTables(blogs, comments);
     }
 
-    createBlogModel() {
+    createBlogTable() {
         return this.sequelize.define('blogs', {
             id: {
                 type: Sequelize.INTEGER,
@@ -45,7 +45,7 @@ class DatabaseInitFactory{
         });
     }
 
-    createCommentModel( ) {
+    createCommentTable( ) {
         return this.sequelize.define( 'comments', {
             id: {
                 type: Sequelize.INTEGER,

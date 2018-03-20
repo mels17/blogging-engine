@@ -10,7 +10,7 @@ class Database {
     init() {
         console.log("Initializing database...");
 
-        [this.Blog, this.Comments] = this.factory.createModels();
+        [this.Blog, this.Comments] = this.factory.createTables();
 
         return this.factory.eraseDBIfExists();
     }
@@ -38,8 +38,6 @@ class Database {
     updateBlog(slug, updatedBlog) {
         return this.getBlog(slug)
             .then(blog => {
-                // return blog.get(updatedBlog.slug);
-                // blog.slug = updatedBlog.slug;
                 return blog.update(updatedBlog);
             })
     }

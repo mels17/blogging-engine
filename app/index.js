@@ -1,7 +1,7 @@
 const Sequelize = require( 'sequelize' );
-const Database = require( './Database');
-const App = require( './App');
-const DatabaseInitFactory = require('./DatabaseInitFactory');
+const Database = require( './Database.js');
+const App = require( './App.js');
+const DatabaseInitFactory = require('./DatabaseInitFactory.js');
 
 let connectionString = `postgres://postgres:postgres@localhost:5432/postgres`;
 const seq = new Sequelize( connectionString );

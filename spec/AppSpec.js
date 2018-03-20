@@ -1,6 +1,6 @@
 const request = require('supertest');
-const Database = require('../app/Database');
-const App = require('../app/App');
+const Database = require('../app/Database.js');
+const App = require('../app/App.js');
 const sinon = require('sinon');
 
 describe('Unit Test App', function () {

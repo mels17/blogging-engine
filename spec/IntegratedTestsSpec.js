@@ -1,8 +1,8 @@
 const request = require('supertest');
-const Database = require('../app/Database');
-const App = require('../app/App');
+const Database = require('../app/Database.js');
+const App = require('../app/App.js');
 const Sequelize = require('sequelize');
-const DatabaseInitFactory = require('../app/DatabaseInitFactory');
+const DatabaseInitFactory = require('../app/DatabaseInitFactory.js');
 
 describe("App", function () {
     const connectionString = `postgres://postgres:postgres@localhost:5432/postgres`;

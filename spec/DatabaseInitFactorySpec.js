@@ -79,7 +79,7 @@ describe( "Isolation tests for creating database models", function() {
 
         var returnBlog = {}, returnComment = {};
 
-        [returnBlog, returnComment] = database.createModels();
+        [returnBlog, returnComment] = database.createTables();
 
         expect(returnBlog).toBe(blog);
         expect(returnComment).toBe(comment);
@@ -96,7 +96,7 @@ describe( "Isolation tests for creating database models", function() {
 
         sinon.stub(seq, 'define').withArgs('blogs', blogTableStructure).returns('blogs');
 
-        expect(database.createBlogModel()).toBe('blogs');
+        expect(database.createBlogTable()).toBe('blogs');
 
         seq.define.restore();
 
@@ -107,7 +107,7 @@ describe( "Isolation tests for creating database models", function() {
 
         sinon.stub(seq, 'define').withArgs('comments', commentTableStructure).returns('comments');
 
-        expect(database.createCommentModel()).toBe('comments');
+        expect(database.createCommentTable()).toBe('comments');
 
         seq.define.restore();
 
