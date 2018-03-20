@@ -37,11 +37,6 @@ describe("Isolation tests for Database", function () {
 
     const commentTableMock = sinon.mock(commentTable);
 
-    it("Database object instantiated successfully", function (done) {
-        expect(db).toBeDefined();
-        done();
-    });
-
     it("Database initialized successfully", function (done) {
 
         sinon.stub(factory, 'createTables').withArgs().returns([blogTable, commentTable]);

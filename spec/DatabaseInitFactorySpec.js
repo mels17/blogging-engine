@@ -63,12 +63,6 @@ describe( "Isolation tests for creating database models", function() {
         done();
     });
 
-    it( "Factory initialisation successful", function(done){
-        expect(database).toBeDefined();
-        expect(database != 'initial value');
-        done();
-    });
-
     it( "models created successfully", function(done) {
 
         var stubDefine = sinon.stub( seq, 'define');
